@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-database
+  template:
+    metadata:
+      labels:
+        app: cloud-database
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:10.6
+          envFrom:
+            - secretRef:
+                name: db-secret
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: db-pvc
